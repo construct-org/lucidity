@@ -42,7 +42,7 @@ setup_requires = [
 ]
 
 install_requires = [
-
+    'six'
 ]
 
 # Readthedocs requires Sphinx extensions to be specified as part of

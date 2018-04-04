@@ -3,6 +3,7 @@
 # :license: See LICENSE.txt.
 
 import abc
+import six
 import sys
 import re
 import functools
@@ -247,12 +248,11 @@ class Template(object):
                 'bad group name' in str(error),
                 'bad character in group name' in str(error)
             ]):
-                raise ValueError('Placeholder name contains invalid '
-                                 'characters.')
+                message = 'Placeholder name contains invalid characters.'
             else:
-                _, value, traceback = sys.exc_info()
-                message = 'Invalid pattern: {0}'.format(value)
-                raise ValueError, message, traceback  #@IgnorePep8
+                message = 'Invalid pattern: ' + str(error)
+
+            six.raise_from(ValueError(message), error)
 
         return compiled
 
@@ -303,10 +303,12 @@ class Template(object):
         return groups['placeholder']
 
 
-class Resolver(object):
-    '''Template resolver interface.'''
+# Python 2 and 3 compatible ABCMeta
+ABC = abc.ABCMeta('ABC', (object,), {})
 
-    __metaclass__ = abc.ABCMeta
+
+class Resolver(ABC):
+    '''Template resolver interface.'''
 
     @abc.abstractmethod
     def get(self, template_name, default=None):
